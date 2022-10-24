@@ -22,6 +22,7 @@ function setup() {
 
     easycam = createEasyCam({ distance: 500 });
 
+    shader(rayMarchingShader);
     textureMode(NORMAL);
     noStroke();
 }
@@ -32,15 +33,9 @@ function draw() {
 }
 
 function drawShader() {
-    push();
-
-    shader(rayMarchingShader);
-
     rayMarchingShader.setUniform('cameraDistance', easycam.getDistance());
     rayMarchingShader.setUniform('dMatrix', dMatrix().mat3);
     rayMarchingShader.setUniform('N', N);
 
     quad(-1, -1, 1, -1, 1, 1, -1, 1);
-
-    pop();
 }

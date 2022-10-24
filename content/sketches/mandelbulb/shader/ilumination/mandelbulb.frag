@@ -152,22 +152,31 @@ vec3 calcNormal(vec3 p, float t) {
         k.xxx * world(p + k.xxx * h));
 }
 
-float ambientOcclusion1(vec3 pos, vec3 N, float fallout) {
-    const int nS = 20; // number of samples
-    const float max_dist = 0.01;
+// AO
+float ambientOcclusion1(vec3 pos, vec3 N, float aoFactor) {
+    const int nS = 12;
+    const float max_dist = 0.07;
 
+    // Terrain diference
     float diff = 0.0;
-    for(int i = 0; i < nS; ++i) {
-        float dist = max_dist * hash1(float(i)); // rand dist        
-        float s_dist = max(0.0, world(pos + dist * N)); // sample
 
-        diff += (dist - s_dist) / max_dist;
+    for(int i = 0; i < nS; ++i) {
+        // Set random distance
+        float dist = max_dist * hash1(float(i));    
+        // move dist units from point in direction to normal 
+        float pI = max(0.0, world(pos + dist * N));
+
+        // Check if there is terrain close
+        diff += (dist - pI) / max_dist;
     }
 
+    // normalize
     float diff_norm = diff / float(nS);
-    float ao = 1.0 - diff_norm / fallout;
 
-    return clamp(0.0, 1.0, ao);
+    // AO term based on close terrain 
+    float ao = 1.0 - diff_norm / aoFactor;
+
+    return clamp(ao, 0., 1.);
 }
 
 // Ray casting with ray march algorithm
@@ -261,7 +270,7 @@ void main() {
         vec3 lt = normalize(ambientPosition - posWS); //surface to light
 
         float diffuseCoef = max(dot(norWS, lt), 0.);
-        vec3 diffuseR = diffuseCoef * ambientColor;
+        vec3 diffuseR = diffuseCoef * ambientColor * shapeC;
 
         // calculate specular (reflection)
         vec3 specular = vec3(0.);
@@ -284,8 +293,6 @@ void main() {
         // float attenuation = attenuationIntesity / pow(lightDistance, attenuationAngle);
         float attenuation = numeratorTerm / (1. + attenuationLight * pow(lightDistance, exponentialTerm));
 
-        // Calculate ambient oclussion
-        float ao = ambientOcclusion1(posWS, norWS, falloutV);
 
         // Add diffuse ligth
         if(diffuseLigth) {
@@ -309,14 +316,21 @@ void main() {
             gl_FragColor = vec4(pow(vec3(attenuation), gamma), 1.);
             return;
         }
+        
+        if(AO)
+            attenuation = 1.;
 
         col += ambient +
             (attenuation * specular * specularIntensity) +
             (attenuation * diffuseR * diffuseIntensity);
 
         // Add ambient oclussion
-        if(AO)
-            col *= ao + 0.01;
+        if(AO){
+            // Calculate ambient oclussion
+            float ao = ambientOcclusion1(posWS, norWS, falloutV);
+            col *= ao;
+        }
+            
     }
 
     vec3 gamma = vec3(1.0 / gammaCorrection);
