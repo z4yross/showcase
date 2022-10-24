@@ -19,19 +19,13 @@ function setup() {
     parent.disableScroll(canvas.canvas);
 
     easycam = createEasyCam({ distance: 500 });
-    
+
+    shader(rayMarchingShader);
     textureMode(NORMAL);
     noStroke();
 }
 
 function draw() {
     background(0);
-    drawShader();
-}
-
-function drawShader() {
-    push();
-    shader(rayMarchingShader);
     quad(-1, -1, 1, -1, 1, 1, -1, 1);
-    pop();
 }
