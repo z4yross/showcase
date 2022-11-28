@@ -29,7 +29,7 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(400, 400, WEBGL);
+    createCanvas(725, 725, WEBGL);
     const gSize = createVector(width / 2, height)
 
     teapotTex = createGraphics(gSize.x, gSize.y, WEBGL);
