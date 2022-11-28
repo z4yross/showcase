@@ -4,6 +4,12 @@ let teapot;
 let teapotTex;
 let bunny;
 let bunnyTex;
+let leaf;
+let leafTex;
+let duck;
+let duckTex;
+let cactus;
+let cactusTex;
 
 let cams = [];
 let graphics = [];
@@ -17,6 +23,9 @@ function preload() {
 
     teapot = loadModel('/showcase/sketches/euclidean/teapot.obj', true);
     bunny = loadModel('/showcase/sketches/euclidean/bunny.obj', true);
+    leaf = loadModel('/showcase/sketches/euclidean/leaf.obj', true);
+    duck = loadModel('/showcase/sketches/euclidean/duck.obj', true);
+    cactus = loadModel('/showcase/sketches/euclidean/cactus.obj', true);
 }
 
 function setup() {
@@ -25,6 +34,9 @@ function setup() {
 
     teapotTex = createGraphics(gSize.x, gSize.y, WEBGL);
     bunnyTex = createGraphics(gSize.x, gSize.y, WEBGL);
+    leafTex = createGraphics(gSize.x, gSize.y, WEBGL);
+    duckTex = createGraphics(gSize.x, gSize.y, WEBGL);
+    cactusTex = createGraphics(gSize.x, gSize.y, WEBGL);
 
     graphics[0] = createGraphics(gSize.x, gSize.y, WEBGL);
     graphics[1] = createGraphics(gSize.x, gSize.y, WEBGL);
@@ -84,6 +96,56 @@ function offcanvasRender({ position, center, up }) {
     teapotTex.scale(1, -1);
     teapotTex.model(teapot);
     teapotTex.pop();
+
+    leafTex.background(200);
+    leafTex.reset();
+    leafTex.camera(
+        position.x, position.y, position.z,
+        center.x, center.y, center.z,
+        up.x, up.y, up.z
+    );
+
+    leafTex.push();
+    leafTex.noStroke();
+    leafTex.fill('black');
+    leafTex.scale(0.8);
+    leafTex.scale(1, -1);
+    leafTex.model(leaf);
+    leafTex.pop();
+
+    duckTex.background(200);
+    duckTex.reset();
+    duckTex.camera(
+        position.x, position.y, position.z,
+        center.x, center.y, center.z,
+        up.x, up.y, up.z
+    );
+
+    duckTex.push();
+    duckTex.noStroke();
+    duckTex.fill('yellow');
+    duckTex.scale(0.6);
+    duckTex.rotateX(PI/2);
+    duckTex.model(duck);
+    duckTex.pop();
+
+
+    cactusTex.background(200);
+    cactusTex.reset();
+    cactusTex.camera(
+        position.x, position.y, position.z,
+        center.x, center.y, center.z,
+        up.x, up.y, up.z
+    );
+
+    cactusTex.push();
+    cactusTex.noStroke();
+    cactusTex.fill('green');
+    cactusTex.scale(0.6);
+    cactusTex.rotateX(PI/2);
+    cactusTex.scale(1, -1);
+    cactusTex.model(cactus);
+    cactusTex.pop();
 }
 
 function draw() {
@@ -122,7 +184,7 @@ function cube(f, texShader) {
     f.vertex(+edge, +edge, +edge);
     f.endShape(CLOSE);
     // left (-x)
-    texShader.setUniform('texture', teapotTex);
+    texShader.setUniform('texture', duckTex);
     f.beginShape();
     f.vertex(-edge, -edge, +edge);
     f.vertex(-edge, -edge, -edge);
@@ -130,7 +192,7 @@ function cube(f, texShader) {
     f.vertex(-edge, +edge, +edge);
     f.endShape(CLOSE);
     // top (-y)
-    texShader.setUniform('texture', bunnyTex);
+    texShader.setUniform('texture', leafTex);
     f.beginShape();
     f.vertex(-edge, -edge, +edge);
     f.vertex(-edge, -edge, -edge);
@@ -138,7 +200,7 @@ function cube(f, texShader) {
     f.vertex(+edge, -edge, +edge);
     f.endShape(CLOSE);
     // left (+y)
-    texShader.setUniform('texture', teapotTex);
+    texShader.setUniform('texture', cactusTex);
     f.beginShape();
     f.vertex(-edge, +edge, +edge);
     f.vertex(-edge, +edge, -edge);
@@ -180,21 +242,21 @@ function tetrahedron(f, texShader) {
     f.vertex(+edge, +edge, -edge);
     f.endShape(CLOSE);
 
-    texShader.setUniform('texture', teapotTex);
+    texShader.setUniform('texture', duckTex);
     f.beginShape();
     f.vertex(0, -edge, 0);
     f.vertex(-edge, +edge, +edge);
     f.vertex(-edge, +edge, -edge);
     f.endShape(CLOSE);
 
-    texShader.setUniform('texture', bunnyTex);
+    texShader.setUniform('texture', cactusTex);
     f.beginShape();
     f.vertex(0, -edge, 0);
     f.vertex(-edge, +edge, -edge);
     f.vertex(+edge, +edge, -edge);
     f.endShape(CLOSE);
 
-    texShader.setUniform('texture', bunnyTex);
+    texShader.setUniform('texture', leafTex);
     f.beginShape();
     f.vertex(-edge, +edge, +edge);
     f.vertex(-edge, +edge, -edge);
@@ -229,14 +291,14 @@ function octahedron(f, texShader) {
     f.vertex(+edge, 0, -edge);
     f.endShape(CLOSE);
 
-    texShader.setUniform('texture', teapotTex);
+    texShader.setUniform('texture', leafTex);
     f.beginShape();
     f.vertex(0, -edge, 0);
     f.vertex(-edge, 0, +edge);
     f.vertex(-edge, 0, -edge);
     f.endShape(CLOSE);
 
-    texShader.setUniform('texture', bunnyTex);
+    texShader.setUniform('texture', cactusTex);
     f.beginShape();
     f.vertex(0, -edge, 0);
     f.vertex(-edge, 0, -edge);
@@ -244,28 +306,28 @@ function octahedron(f, texShader) {
     f.endShape(CLOSE);
 
     // bottom
-    texShader.setUniform('texture', bunnyTex);
+    texShader.setUniform('texture', leafTex);
     f.beginShape();
     f.vertex(0, +edge, 0);
     f.vertex(+edge, 0, +edge);
     f.vertex(-edge, 0, +edge);
     f.endShape(CLOSE);
 
-    texShader.setUniform('texture', teapotTex);
+    texShader.setUniform('texture', bunnyTex);
     f.beginShape();
     f.vertex(0, +edge, 0);
     f.vertex(+edge, 0, +edge);
     f.vertex(+edge, 0, -edge);
     f.endShape(CLOSE);
 
-    texShader.setUniform('texture', teapotTex);
+    texShader.setUniform('texture', cactusTex);
     f.beginShape();
     f.vertex(0, +edge, 0);
     f.vertex(-edge, 0, +edge);
     f.vertex(-edge, 0, -edge);
     f.endShape(CLOSE);
 
-    texShader.setUniform('texture', bunnyTex);
+    texShader.setUniform('texture', duckTex);
     f.beginShape();
     f.vertex(0, +edge, 0);
     f.vertex(-edge, 0, -edge);
